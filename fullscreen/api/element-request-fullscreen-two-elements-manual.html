@@ -11,6 +11,7 @@ async_test(t => {
   // Request fullscreen on both elements, but in reverse tree order.
   const a = document.getElementById('a');
   const b = document.getElementById('b');
+  var rejected = false;
 
   // Expect two fullscreenchange events, with document.fullscreenElement
   // changing in the same order as the requests.
@@ -27,11 +28,19 @@ async_test(t => {
       t.done();
     }
   });
-  document.onfullscreenerror = t.unreached_func('fullscreenerror event');
+  document.onfullscreenerror = t.step_func(() => {
+    assert_true(rejected, "second fullscreen fails");
+    step_timeout(t.unreached_func('timer callback'));
+    requestAnimationFrame(t.step_func_done());
+  });
 
   trusted_click(t, () => {
     b.requestFullscreen();
-    a.requestFullscreen();
+    var p = a.requestFullscreen();
+    if (p) {
+      p.catch(t.step_func(() => rejected = true));
+      Promise.resolve().then(t.step_func(() => assert_true(rejected)));
+    }
   }, document.body);
 });
 </script>
