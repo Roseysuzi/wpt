@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/helper.sub.js"></script>
+
+<meta http-equiv="Content-Security-Policy" content="trusted-types *">
+<body>
+<script>
+  test(t => {
+    const empty = TrustedTypes.EMPTY_HTML;
+    assert_true(TrustedTypes.isHTML(empty));
+    assert_equals(empty.toString(), "");
+  }, 'TrustedTypes.EMPTY_HTML returns the intended value.');
+</script>
